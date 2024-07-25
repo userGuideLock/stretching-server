@@ -3,7 +3,7 @@
 "username": "root",
 "password": "danjam",
 "database": "stretching",
-"host": "localhost",
+"host": "db",
 "dialect": "mariadb",
   "port": 3306
     
