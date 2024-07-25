@@ -38,7 +38,7 @@ docker rm stretching-container || true
 
 # 새로운 이미지로 컨테이너 실행
 echo "Starting new Docker container..."
-docker run -d --name stretching-container -p 3005:3005 $IMAGE_NAME
+docker run --env-file /tmp/.env -d --name stretching-container -p 3005:3005 $IMAGE_NAME
 
 # 컨테이너 실행 오류 확인
 if [ $? -ne 0 ]; then
