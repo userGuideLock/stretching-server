@@ -3,7 +3,7 @@
 "username": "root",
 "password": "danjam",
 "database": "stretching",
-"host": "db",
+"host": "spring-db-1",
 "dialect": "mariadb",
   "port": 3306
     
