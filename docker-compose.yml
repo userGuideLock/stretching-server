@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  stretching-app:
+    image: gayun5313/stretching:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - /tmp/.env  # 서버에서의 .env 파일 경로
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: stretching  # 루트 사용자 비밀번호
+      MYSQL_DATABASE: stretching  # 기본 데이터베이스 이름
+      MYSQL_USER: root  # 기본 사용자 이름
+      MYSQL_PASSWORD: stretching  # 사용자 비밀번호
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+    driver: local
