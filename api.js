@@ -17,7 +17,7 @@ module.exports = class API {
   }
 
   listen() {
-    const PORT = 3005;
+    const PORT = 3000;
     this.server = this.app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
