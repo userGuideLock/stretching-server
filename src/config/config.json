@@ -1,8 +1,10 @@
 {
-  "username": "root",
-  "password": "stretching",
-  "database": "stretching",
-  "host": "localhost",
-  "dialect": "mariadb",
-  "port": 3307
+
+"username": "root",
+"password": "danjam",
+"database": "stretching",
+"host": "spring-db-1",
+"dialect": "mariadb",
+  "port": 3306
+
 }
