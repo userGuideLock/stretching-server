@@ -61,7 +61,8 @@ jobs:
           echo "Files in current directory:"
           ls -la
 
-          chmod +x deploy.sh
+          # Ensure deploy.sh is executable
+          chmod +x $GITHUB_WORKSPACE/deploy.sh
           
           scp -o StrictHostKeyChecking=no -i private_key -P 8822 deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
           if [ $? -ne 0 ]; then
