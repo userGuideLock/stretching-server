@@ -1,0 +1,55 @@
+{
+  "name": "stretching-server",
+  "version": "1.0.0",
+  "description": "spot pointing by keyword",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js",
+    "dev": "cross-env NODE_ENV=development npx prettier --write 'src/**/*.js' && node app.js",
+    "prepare": "husky install",
+    "lint": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/userGuideLock/stretching-spot-Backend.git"
+  },
+  "keywords": [
+    "spot"
+  ],
+  "author": "Hermi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/userGuideLock/stretching-spot-Backend/issues"
+  },
+  "homepage": "https://github.com/userGuideLock/stretching-spot-Backend#readme",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-asyncify": "^3.1.0",
+    "firebase": "^10.12.4",
+    "firebase-admin": "^12.2.0",
+    "mariadb": "^3.3.1",
+    "openai": "^4.53.0",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@eslint/js": "^9.7.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.7.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.8.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
