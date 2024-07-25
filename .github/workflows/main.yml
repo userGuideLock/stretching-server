@@ -63,13 +63,22 @@ jobs:
 
           # Ensure deploy.sh is executable
           chmod +x $GITHUB_WORKSPACE/deploy.sh
-          
-          scp -o StrictHostKeyChecking=no -i private_key -P 8822 deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+
+          # Copy deploy.sh to the server
+          scp -o StrictHostKeyChecking=no -i private_key -P 8822 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
           if [ $? -ne 0 ]; then
             echo "Error: Failed to copy deploy.sh to the server."
             exit 1
           fi
           echo "deploy.sh successfully copied to the server."
           
+          # Execute deploy.sh on the server
           ssh -o StrictHostKeyChecking=no -i private_key -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to execute deploy.sh on the server."
+            exit 1
+          fi
+          echo "deploy.sh executed successfully on the server."
+
+          # Clean up
           rm private_key
