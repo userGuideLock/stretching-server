@@ -42,7 +42,7 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
           if [ $? -ne 0 ]; then
             echo "Error: SSH connection failed."
             exit 1
@@ -65,7 +65,7 @@ jobs:
           chmod +x $GITHUB_WORKSPACE/deploy.sh
 
           # Copy deploy.sh to the server using sshpass
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 8822 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
           if [ $? -ne 0 ]; then
             echo "Error: Failed to copy deploy.sh to the server."
             exit 1
@@ -73,7 +73,7 @@ jobs:
           echo "deploy.sh successfully copied to the server."
 
           # Execute deploy.sh on the server using sshpass
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
           if [ $? -ne 0 ]; then
             echo "Error: Failed to execute deploy.sh on the server."
             exit 1
