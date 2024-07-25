@@ -55,6 +55,12 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
 
+          # Print the current directory and list all files
+          echo "Current directory:"
+          pwd
+          echo "Files in current directory:"
+          ls -la
+
           chmod +x deploy.sh
           
           scp -o StrictHostKeyChecking=no -i private_key -P 8822 deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
