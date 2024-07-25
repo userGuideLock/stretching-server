@@ -59,7 +59,7 @@ jobs:
           echo "Current directory:"
           pwd
           echo "Files in current directory:"
-          ll
+          ls -la
 
           # Ensure deploy.sh is executable
           chmod +x $GITHUB_WORKSPACE/deploy.sh
