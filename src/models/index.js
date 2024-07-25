@@ -4,6 +4,12 @@ const defineDiary = require('./diary');
 const defineUser = require('./user');
 const defineSurvey = require('./survey');
 
+console.log(
+  'host: ' + config.host,
+  'username: ' + config.username,
+  'password: ' + config.password,
+);
+
 const sequelize = new Sequelize(
   config.database,
   config.username,
