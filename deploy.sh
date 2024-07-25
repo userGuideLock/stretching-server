@@ -3,7 +3,7 @@
 # Docker 이미지 이름과 태그 설정
 IMAGE_NAME="gayun5313/stretching:latest"
 
-# Docker Hub에 로그인
+# Docker Hub에 로그인 (비상호작용 모드)
 echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
 # 새로운 이미지 가져오기
