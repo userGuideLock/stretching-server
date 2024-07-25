@@ -47,3 +47,4 @@ jobs:
           scp -i private_key -P $SSH_PORT deploy.sh $SERVER_USER@$SERVER_HOST:/tmp/
           ssh -i private_key -p $SSH_PORT $SERVER_USER@$SERVER_HOST 'bash /tmp/deploy.sh'
           rm private_key
+          
