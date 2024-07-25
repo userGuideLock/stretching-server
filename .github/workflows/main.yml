@@ -31,12 +31,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SSH_PORT: 8822 # SSH 포트 번호 설정
+          SSH_PORT: 8822
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
 
-          # 포트 8822로 scp 및 ssh 명령어 실행
           scp -i private_key -P $SSH_PORT -o StrictHostKeyChecking=no deploy.sh $SERVER_USER@$SERVER_HOST:/tmp/
           ssh -i private_key -p $SSH_PORT -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST 'bash /tmp/deploy.sh'
 
