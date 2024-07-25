@@ -2,7 +2,7 @@
   "username": "root",
   "password": "stretching",
   "database": "stretching",
-  "host": "mariadb",
+  "host": "localhost",
   "dialect": "mariadb",
   "port": 3306
 }
