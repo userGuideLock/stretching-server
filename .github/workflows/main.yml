@@ -36,46 +36,18 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Test SSH Connection
+      - name: Deploy to server and run
         env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
-          if [ $? -ne 0 ]; then
-            echo "Error: SSH connection failed."
-            exit 1
-          fi
-          echo "SSH connection successful."
-
-      - name: Deploy to server
-        env:
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-        run: |
-          # Print the current directory and list all files
-          echo "Current directory:"
-          pwd
-          echo "Files in current directory:"
-          ls -la
-
-          # Ensure deploy.sh is executable
-          chmod +x $GITHUB_WORKSPACE/deploy.sh
-
-          # Copy deploy.sh to the server using sshpass
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
-          if [ $? -ne 0 ]; then
-            echo "Error: Failed to copy deploy.sh to the server."
-            exit 1
-          fi
-          echo "deploy.sh successfully copied to the server."
-
-          # Execute deploy.sh on the server using sshpass
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
-          if [ $? -ne 0 ]; then
-            echo "Error: Failed to execute deploy.sh on the server."
-            exit 1
-          fi
-          echo "deploy.sh executed successfully on the server."
+          # Set Docker credentials and deploy.sh on the server, then execute the script
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            echo 'export DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}' > /tmp/docker_creds.sh &&
+            echo 'export DOCKER_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }}' >> /tmp/docker_creds.sh &&
+            chmod 600 /tmp/docker_creds.sh &&
+            scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/ &&
+            bash /tmp/deploy.sh"
