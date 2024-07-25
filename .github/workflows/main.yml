@@ -29,6 +29,11 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Print SERVER_USER
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: echo "Deploying as user: $SERVER_USER"
+      
       - name: Deploy to server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -39,6 +44,6 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
-          scp -i private_key -P $SSH_PORT deploy.sh $SERVER_USER@$SERVER_HOST:/tmp/
-          ssh -i private_key -p $SSH_PORT $SERVER_USER@$SERVER_HOST 'bash /tmp/deploy.sh'
+          scp -o StrictHostKeyChecking=no -i private_key -P $SSH_PORT deploy.sh $SERVER_USER@$SERVER_HOST:/tmp/
+          ssh -o StrictHostKeyChecking=no -i private_key -p $SSH_PORT $SERVER_USER@$SERVER_HOST 'bash /tmp/deploy.sh'
           rm private_key
