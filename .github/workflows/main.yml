@@ -30,7 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print SERVER_USER
-        run: echo "Deploying as user: ${{ secrets.SERVER_USER }}"
+        run: echo "Deploying as user: $SERVER_USER"
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
       
       - name: Deploy to server
         env:
