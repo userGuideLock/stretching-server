@@ -50,4 +50,6 @@ jobs:
             echo 'export DOCKER_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }}' >> /tmp/docker_creds.sh &&
             chmod 600 /tmp/docker_creds.sh &&
             scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/ &&
+            chmod +x /tmp/deploy.sh &&
             bash /tmp/deploy.sh"
+
