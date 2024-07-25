@@ -13,11 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Verify checked out code
-        run: |
-          echo "Checked out code:"
-          ls -la
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -35,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Test SSH Connection
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -76,7 +74,7 @@ jobs:
             exit 1
           fi
           echo "deploy.sh successfully copied to the server."
-          
+
           # Execute deploy.sh on the server
           ssh -o StrictHostKeyChecking=no -i private_key -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
           if [ $? -ne 0 ]; then
