@@ -33,31 +33,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
       - name: Test SSH Connection
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-          chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
           if [ $? -ne 0 ]; then
             echo "Error: SSH connection failed."
             exit 1
           fi
           echo "SSH connection successful."
-          rm private_key
 
       - name: Deploy to server
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-          chmod 600 private_key
-
           # Print the current directory and list all files
           echo "Current directory:"
           pwd
@@ -67,21 +64,18 @@ jobs:
           # Ensure deploy.sh is executable
           chmod +x $GITHUB_WORKSPACE/deploy.sh
 
-          # Copy deploy.sh to the server
-          scp -o StrictHostKeyChecking=no -i private_key -P 8822 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+          # Copy deploy.sh to the server using sshpass
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 8822 $GITHUB_WORKSPACE/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
           if [ $? -ne 0 ]; then
             echo "Error: Failed to copy deploy.sh to the server."
             exit 1
           fi
           echo "deploy.sh successfully copied to the server."
 
-          # Execute deploy.sh on the server
-          ssh -o StrictHostKeyChecking=no -i private_key -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
+          # Execute deploy.sh on the server using sshpass
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8822 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /tmp/deploy.sh'
           if [ $? -ne 0 ]; then
             echo "Error: Failed to execute deploy.sh on the server."
             exit 1
           fi
           echo "deploy.sh executed successfully on the server."
-
-          # Clean up
-          rm private_key
