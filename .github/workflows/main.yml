@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때마다 워크플로우가 실행됩니다.
+      - main
   pull_request:
     branches:
-      - main  # main 브랜치에 대한 풀 리퀘스트가 열리거나 업데이트될 때 실행됩니다.
+      - main
 
 jobs:
   build-and-push:
@@ -22,8 +22,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build Docker image
-        run: docker build . -t gayun513/stretching:latest
-
-      - name: Push Docker image
-        run: docker push gayun5313/stretching:latest
+      - name: Build and release to DockerHub
+        env:
+          NAME: gayun5313 # Docker Hub 계정명
+          REPO: stretching # Docker Hub 저장소 이름
+        run: |
+          docker build -t $REPO .
+          docker tag $REPO:latest $NAME/$REPO:latest
+          docker push $NAME/$REPO:latest
