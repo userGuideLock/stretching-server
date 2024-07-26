@@ -23,7 +23,6 @@ jobs:
         run: |
           docker build -t gayun5313/stretching:latest .
           docker push gayun5313/stretching:latest
-
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -35,25 +34,20 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Copy deploy script and Docker Compose file to server
+      - name: Deploy to server using Docker Compose
         env:
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          # Copy deploy script and docker-compose.yml to the server
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy.sh
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy/docker-compose.yml
-
-      - name: Set environment variables and run deploy script on server
-        env:
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-        run: |
+          echo "Starting deployment process..."
+          # Ensure the target directory exists
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            export DOCKER_USERNAME='${{ secrets.DOCKERHUB_USERNAME }}' &&
-            export DOCKER_PASSWORD='${{ secrets.DOCKERHUB_PASSWORD }}' &&
-            bash /home/hermi/deploy.sh"
+            mkdir -p /home/hermi &&
+            mkdir -p /home/hermi/deploy && exit"
+          # Copy docker-compose.yml to the server
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy/docker-compose.yml
+          # Run Docker Compose on the server
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            docker-compose -f /home/hermi/deploy/docker-compose.yml pull &&
+            docker-compose -f /home/hermi/deploy/docker-compose.yml up -d"
