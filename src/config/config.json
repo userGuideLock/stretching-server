@@ -4,5 +4,5 @@
   "database": "stretching",
   "host": "mariadb",
   "dialect": "mariadb",
-  "port": 3307
+  "port": 3306
 }
