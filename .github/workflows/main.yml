@@ -45,11 +45,11 @@ jobs:
           echo "Starting deployment process..."
           # Ensure the target directory exists with root privileges
           ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            echo ${SERVER_PASSWORD} | sudo -S mkdir -p /home/agong/hermi-server &&
-            echo ${SERVER_PASSWORD} | sudo -S mkdir -p /home/agong/hermi-server/deploy"
+            sudo mkdir -p /home/agong/hermi-server &&
+            sudo mkdir -p /home/agong/hermi-server/deploy"
           # Copy docker-compose.yml to the server
           scp -o StrictHostKeyChecking=no -P 22 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/agong/hermi-server/deploy/docker-compose.yml
           # Run Docker Compose on the server
           ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml pull &&
-            docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml up -d"
+            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml pull &&
+            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml up -d"
