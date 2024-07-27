@@ -23,6 +23,7 @@ jobs:
         run: |
           docker build -t gayun5313/stretching:latest .
           docker push gayun5313/stretching:latest
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -31,23 +32,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_PRIVATE_KEY }}
 
       - name: Deploy to server using Docker Compose
         env:
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
           echo "Starting deployment process..."
-          # Ensure the target directory exists
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            mkdir -p /home/hermi &&
-            mkdir -p /home/hermi/deploy && exit"
+          
+          # Ensure the target directory exists with root privileges
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            sudo mkdir -p /home/agong/hermi-server &&
+            sudo mkdir -p /home/agong/hermi-server/deploy &&
+            sudo chown ${SERVER_USER}:${SERVER_USER} /home/agong/hermi-server &&
+            sudo chown ${SERVER_USER}:${SERVER_USER} /home/agong/hermi-server/deploy"
+          
           # Copy docker-compose.yml to the server
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -P 22 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/agong/hermi-server/deploy/docker-compose.yml
+
           # Run Docker Compose on the server
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            docker-compose -f /home/hermi/deploy/docker-compose.yml pull &&
-            docker-compose -f /home/hermi/deploy/docker-compose.yml up -d"
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml pull &&
+            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml up -d"
