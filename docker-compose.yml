@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - /tmp/.env
+      - /home/agong/hermi-env/.env
     depends_on:
       - mariadb
 
