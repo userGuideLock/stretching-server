@@ -47,12 +47,12 @@ jobs:
         run: |
           echo "Starting deployment process..."
           # Ensure the target directory exists
-          ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             mkdir -p /home/hermi &&
             mkdir -p /home/hermi/deploy && exit"
           # Copy docker-compose.yml to the server
-          scp -o StrictHostKeyChecking=no -P 2412 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -P 22 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/hermi/deploy/docker-compose.yml
           # Run Docker Compose on the server
-          ssh -o StrictHostKeyChecking=no -p 2412 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             docker-compose -f /home/hermi/deploy/docker-compose.yml pull &&
             docker-compose -f /home/hermi/deploy/docker-compose.yml up -d"
