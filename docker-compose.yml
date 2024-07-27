@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   stretching-app:
     image: gayun5313/stretching:latest
