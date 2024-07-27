@@ -41,20 +41,21 @@ jobs:
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
           echo "Starting deployment process..."
           
           # Ensure the target directory exists with root privileges
           ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            sudo mkdir -p /home/agong/hermi-server &&
-            sudo mkdir -p /home/agong/hermi-server/deploy &&
-            sudo chown ${SERVER_USER}:${SERVER_USER} /home/agong/hermi-server &&
-            sudo chown ${SERVER_USER}:${SERVER_USER} /home/agong/hermi-server/deploy"
+            echo ${SERVER_PASSWORD} | sudo -S mkdir -p /home/${SERVER_USER}/hermi-server &&
+            echo ${SERVER_PASSWORD} | sudo -S mkdir -p /home/${SERVER_USER}/hermi-server/deploy &&
+            echo ${SERVER_PASSWORD} | sudo -S chown ${SERVER_USER}:${SERVER_USER} /home/${SERVER_USER}/hermi-server &&
+            echo ${SERVER_PASSWORD} | sudo -S chown ${SERVER_USER}:${SERVER_USER} /home/${SERVER_USER}/hermi-server/deploy"
           
           # Copy docker-compose.yml to the server
-          scp -o StrictHostKeyChecking=no -P 22 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/agong/hermi-server/deploy/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -P 22 ${GITHUB_WORKSPACE}/docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/${SERVER_USER}/hermi-server/deploy/docker-compose.yml
 
           # Run Docker Compose on the server
           ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml pull &&
-            sudo docker-compose -f /home/agong/hermi-server/deploy/docker-compose.yml up -d"
+            echo ${SERVER_PASSWORD} | sudo -S docker compose -f /home/${SERVER_USER}/hermi-server/deploy/docker-compose.yml pull &&
+            echo ${SERVER_PASSWORD} | sudo -S docker compose -f /home/${SERVER_USER}/hermi-server/deploy/docker-compose.yml up -d"
