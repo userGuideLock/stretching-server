@@ -10,18 +10,25 @@ const defineDiary = (sequelize) => {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
+        type: DataTypes.STRING,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
+      //기분
       mood: {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      //오늘 하루 스트레스 해소를 위해 진행한 노력
       effort: {
         type: DataTypes.STRING,
         allowNull: false,

@@ -33,6 +33,12 @@ const defineUser = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      //회원가입한 날짜 자동저장
+      createdTime: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       timestamps: false,
