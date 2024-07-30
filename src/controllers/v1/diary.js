@@ -12,4 +12,9 @@ router.get('/:userId', async (req, res) => {
   return res;
 });
 
+router.get('/count/:userId', async (req, res) => {
+  await DiaryService.getDiaryCount(req, res);
+  return res;
+});
+
 module.exports = router;
