@@ -10,7 +10,8 @@ const defineDiary = (sequelize) => {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, // VARCHAR(255) 타입, User 모델의 id와 일치
+        allowNull: false,
         references: {
           model: 'users',
           key: 'id',
@@ -23,12 +24,10 @@ const defineDiary = (sequelize) => {
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
-      //기분
       mood: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      //오늘 하루 스트레스 해소를 위해 진행한 노력
       effort: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -53,6 +52,7 @@ const defineDiary = (sequelize) => {
       tableName: 'diaries',
     },
   );
+
   return Diary;
 };
 

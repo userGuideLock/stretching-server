@@ -5,9 +5,10 @@ const defineUser = (sequelize) => {
     'User',
     {
       id: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, // VARCHAR(255) 타입
         allowNull: false,
         primaryKey: true,
+        unique: true, // 유니크 제약 조건 추가
       },
       email: {
         type: DataTypes.STRING,
@@ -33,7 +34,6 @@ const defineUser = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      //회원가입한 날짜 자동저장
       createdTime: {
         type: DataTypes.DATE,
         allowNull: false,

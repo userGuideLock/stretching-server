@@ -5,57 +5,28 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function extractKeywords(text) {
+async function generateRecommendations(text, categories) {
   const prompt = `
-    Extract the main keywords from the following text. Respond strictly in the following JSON format:
-    
-    {
-      "keywords": ["keyword1", "keyword2", "keyword3"]
-    }
-    
-    Text: "${text}"
-  `;
+    Based on the following text, perform the following tasks:
+    1. Extract the main keywords.
+    2. Recommend the most suitable category from the provided list of categories.
+    3. Suggest a relevant wellness program based on the extracted keywords.
+    4. Recommend appropriate daily healing content based on the extracted keywords.
 
-  const completion = await client.chat.completions.create({
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant designed to output JSON.',
-      },
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-    model: 'gpt-4o-mini',
-    response_format: { type: 'json_object' },
-  });
+    Note: Place a lower priority on keywords related to stress relief activities compared to other general keywords.
 
-  const keywordsResponse = completion.choices[0].message.content.trim();
-  try {
-    const jsonResponse = JSON.parse(keywordsResponse);
-    if (Array.isArray(jsonResponse.keywords)) {
-      return jsonResponse.keywords;
-    } else {
-      throw new Error('Invalid response format');
-    }
-  } catch (error) {
-    console.error('Failed to parse GPT response:', error);
-    return [];
-  }
-}
+    The responses should be in Korean and each item should be a single word.
 
-async function recommendCategory(keywords, categories) {
-  const prompt = `
-    Based on the following keywords, recommend the most suitable category from the list of categories provided. 
-    Note: Place a lower priority on keywords related to stress relief activities compared to other general keywords. 
     Respond strictly in the following JSON format:
-    
+
     {
-      "recommendedCategory": "category_name"
+      "keywords": ["키워드1", "키워드2", "키워드3"],
+      "recommendedCategory": "카테고리명",
+      "recommendedWellnessProgram": "프로그램명 (한 단어)",
+      "recommendedHealingContent": "컨텐츠명 (구체적인 구문)"
     }
-    
-    Keywords: ["${keywords.join('", "')}"]
+
+    Text: "${text}"
     Categories: ["${categories.join('", "')}"]
   `;
 
@@ -63,7 +34,8 @@ async function recommendCategory(keywords, categories) {
     messages: [
       {
         role: 'system',
-        content: 'You are a helpful assistant designed to output JSON.',
+        content:
+          'You are a helpful assistant designed to output JSON in a structured format.',
       },
       {
         role: 'user',
@@ -74,15 +46,11 @@ async function recommendCategory(keywords, categories) {
     response_format: { type: 'json_object' },
   });
 
-  const recommendedCategoryResponse =
-    completion.choices[0].message.content.trim();
+  const recommendationsResponse = completion.choices[0].message.content.trim();
   try {
-    const jsonResponse = JSON.parse(recommendedCategoryResponse);
-    if (typeof jsonResponse.recommendedCategory === 'string') {
-      return jsonResponse.recommendedCategory;
-    } else {
-      throw new Error('Invalid response format');
-    }
+    const jsonResponse = JSON.parse(recommendationsResponse);
+    console.log(jsonResponse);
+    return jsonResponse;
   } catch (error) {
     console.error('Failed to parse GPT response:', error);
     return null;
@@ -90,6 +58,5 @@ async function recommendCategory(keywords, categories) {
 }
 
 module.exports = {
-  extractKeywords,
-  recommendCategory,
+  generateRecommendations,
 };
