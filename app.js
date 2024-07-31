@@ -1,7 +1,16 @@
 const API = require('./api');
 const { initModels } = require('./src/models');
-
 require('dotenv').config(); //환경 변수 로드
+const { sendNotifications } = require('./src/services/fcmService');
+
+const firebaseAdmin = require('firebase-admin');
+const schedule = require('node-schedule');
+
+// FCM 초기화
+const serviceAccount = require('./firebaseKey.json');
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+});
 
 (async () => {
   try {
@@ -11,6 +20,11 @@ require('dotenv').config(); //환경 변수 로드
 
     await initModels();
     console.log('Database synchronized successfully.');
+
+    // 매 분마다 sendNotifications 호출
+    schedule.scheduleJob('* * * * *', async () => {
+      await sendNotifications();
+    });
 
     process.on('SIGINT', async () => {
       await api.close();
