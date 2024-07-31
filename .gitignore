@@ -58,3 +58,6 @@ secret/
 
 # docker file
 docker-compose.yml
+
+# firebase key
+firebaseKey.json
