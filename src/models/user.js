@@ -18,6 +18,10 @@ const defineUser = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      deviceId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       gender: {
         type: DataTypes.STRING,
         allowNull: true,
