@@ -94,4 +94,29 @@ const getDiaryCount = async (req, res) => {
     .json({ writtenDiaryCount: diaries.length, notWrittenDiaryCount });
 };
 
-module.exports = { createDiary, getAllDiaries, getDiaryCount };
+// 해당유저가 오늘 일기를 작성했는지 확인
+const checkTodayDiary = async (req, res) => {
+  const { userId } = req.params;
+  if (req.query.today == null) {
+    return res.status(400).json({ code: 1, message: 'Invalid input' });
+  }
+  const today = req.query.today ? new Date(req.query.today) : new Date();
+
+  // 유저 정보 가져오기
+  const user = await db.User.findOne({ where: { id: userId } });
+  if (!user) {
+    return res.status(400).json({ code: 2, message: 'User not found' });
+  }
+
+  // 오늘 작성한 다이어리가 있는지 확인. 있으면 true, 없으면 false 반환
+  const diary = await db.Diary.findOne({
+    where: { userId, date: today },
+  });
+  if (diary) {
+    res.status(200).json({ today_diary: true });
+  } else {
+    res.status(200).json({ today_diary: false });
+  }
+};
+
+module.exports = { createDiary, getAllDiaries, getDiaryCount, checkTodayDiary };
