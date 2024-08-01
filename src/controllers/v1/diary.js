@@ -17,4 +17,15 @@ router.get('/count/:userId', async (req, res) => {
   return res;
 });
 
+/**
+ * 오늘 작성한 다이어리가 있는지 확인
+ * userId: 사용자 아이디
+ * date: 오늘 날짜
+ * @return {boolean} true: 작성한 다이어리가 있음, false: 작성한 다이어리가 없음
+ */
+router.get('/checktoday/:userId', async (req, res) => {
+  await DiaryService.checkTodayDiary(req, res);
+  return res;
+});
+
 module.exports = router;

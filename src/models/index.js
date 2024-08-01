@@ -10,6 +10,7 @@ console.log(
   'password: ' + config.password,
 );
 
+const defineUserFCMToken = require('./UserFCMToken');
 const sequelize = new Sequelize(
   config.database,
   config.username,
@@ -30,6 +31,7 @@ const db = {
   User: defineUser(sequelize), // 모델을 초기화
   Diary: defineDiary(sequelize), // 모델을 초기화
   Survey: defineSurvey(sequelize),
+  UserFCMToken: defineUserFCMToken(sequelize),
 };
 
 // Define associations
@@ -48,9 +50,10 @@ db.Survey.belongsTo(db.User, {
 });
 
 const initModels = async () => {
-  await db.User.sync({ force: false }); // User 모델 먼저 동기화
+  await db.User.sync({ force: true }); // User 모델 먼저 동기화
   await db.Diary.sync({ force: false });
   await db.Survey.sync({ force: false });
+  await db.UserFCMToken.sync({ force: false });
 };
 
 module.exports = {

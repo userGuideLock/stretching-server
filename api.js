@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const controllers = require('./src/controllers');
 
 require('dotenv').config(); // 환경 변수 로드
@@ -6,6 +7,11 @@ require('dotenv').config(); // 환경 변수 로드
 module.exports = class API {
   constructor() {
     this.app = express();
+    this.app.use(
+      cors({
+        origin: 'http://localhost:3000',
+      }),
+    );
     this.app.use(express.json());
   }
 
@@ -14,6 +20,7 @@ module.exports = class API {
     this.app.use('/api/v1/users', controllers.v1.UserController);
     this.app.use('/api/v1/diary', controllers.v1.DiaryController);
     this.app.use('/api/v1/survey', controllers.v1.SurveyController);
+    this.app.use('/api/v1/userfcmtoken', controllers.v1.UserFCMTokenController);
   }
 
   listen() {

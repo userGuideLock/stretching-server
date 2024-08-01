@@ -24,12 +24,16 @@
   "homepage": "https://github.com/userGuideLock/stretching-spot-Backend#readme",
   "dependencies": {
     "axios": "^1.7.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-asyncify": "^3.1.0",
     "firebase": "^10.12.4",
-    "firebase-admin": "^12.2.0",
+    "firebase-admin": "^12.3.0",
     "mariadb": "^3.3.1",
+    "moment-timezone": "^0.5.45",
+    "node-cron": "^3.0.3",
+    "node-schedule": "^2.1.1",
     "openai": "^4.53.0",
     "sequelize": "^6.37.3"
   },
