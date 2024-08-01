@@ -1,8 +1,8 @@
 {
   "username": "root",
-  "password": "stretching",
+  "password": "hermi",
   "database": "stretching",
-  "host": "mariadb",
+  "host": "localhost",
   "dialect": "mariadb",
   "port": 3306
 }

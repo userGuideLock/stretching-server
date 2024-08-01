@@ -3,6 +3,7 @@ const config = require('../config/config.json');
 const defineDiary = require('./diary');
 const defineUser = require('./user');
 const defineSurvey = require('./survey');
+const defineStreess = require('./stress');
 
 console.log(
   'host: ' + config.host,
@@ -32,6 +33,7 @@ const db = {
   Diary: defineDiary(sequelize), // 모델을 초기화
   Survey: defineSurvey(sequelize),
   UserFCMToken: defineUserFCMToken(sequelize),
+  Stress: defineStreess(sequelize),
 };
 
 // Define associations
@@ -41,11 +43,14 @@ db.User.hasMany(db.Diary, {
 db.Diary.belongsTo(db.User, {
   foreignKey: 'userId',
 });
-
 db.User.hasOne(db.Survey, {
   foreignKey: 'userId',
 });
 db.Survey.belongsTo(db.User, {
+  foreignKey: 'userId',
+});
+
+db.User.hasMany(db.Stress, {
   foreignKey: 'userId',
 });
 
