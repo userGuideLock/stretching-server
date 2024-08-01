@@ -10,7 +10,7 @@ console.log(
   'password: ' + config.password,
 );
 
-const defineUserFCMToken = require('./UserFCMToken');
+const defineUserFCMToken = require('./userFCMToken');
 const sequelize = new Sequelize(
   config.database,
   config.username,
