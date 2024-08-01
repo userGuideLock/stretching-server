@@ -4,7 +4,7 @@ const { UserService } = require('../../services');
 
 router.post('/join', async (req, res) => {
   try {
-    const { id, email, password } = req.body;
+    const { id, email, password, deviceId, gender, job, age, hobby } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: 'Id is required' });
@@ -18,7 +18,20 @@ router.post('/join', async (req, res) => {
       return res.status(400).json({ error: 'Password is required' });
     }
 
-    const user = await UserService.Join(id, email, password);
+    if (!deviceId) {
+      return res.status(400).json({ error: 'deviceId is required' });
+    }
+
+    const user = await UserService.Join(
+      id,
+      email,
+      password,
+      deviceId,
+      gender,
+      job,
+      age,
+      hobby,
+    );
 
     if (user) {
       res.status(201).json({ message: 'User successfully created' });
@@ -33,7 +46,7 @@ router.post('/join', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { id, password } = req.body;
+    const { id, password, deviceId } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: 'Id is required' });
@@ -43,7 +56,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Password is required' });
     }
 
-    const user = await UserService.Login(id, password);
+    if (!deviceId) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    const user = await UserService.Login(id, password, deviceId);
 
     if (user) {
       res.status(201).json({ message: 'User successfully login' });
