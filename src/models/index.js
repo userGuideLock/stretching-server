@@ -50,7 +50,7 @@ db.Survey.belongsTo(db.User, {
 });
 
 const initModels = async () => {
-  await db.sequelize.sync({ force: true });
+  await db.sequelize.sync({ force: false, alter: true });
 };
 
 module.exports = {
