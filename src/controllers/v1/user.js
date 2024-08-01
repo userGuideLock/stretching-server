@@ -22,6 +22,13 @@ router.post('/join', async (req, res) => {
       return res.status(400).json({ error: 'deviceId is required' });
     }
 
+    // hobby가 배열인지 확인
+    if (hobby && !Array.isArray(hobby)) {
+      return res
+        .status(400)
+        .json({ error: 'Hobby must be an array of strings' });
+    }
+
     const user = await UserService.Join(
       id,
       email,
