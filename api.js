@@ -21,6 +21,8 @@ module.exports = class API {
     this.app.use('/api/v1/diary', controllers.v1.DiaryController);
     this.app.use('/api/v1/survey', controllers.v1.SurveyController);
     this.app.use('/api/v1/userfcmtoken', controllers.v1.UserFCMTokenController);
+    this.app.use('/api/v1/stress', controllers.v1.StressController);
+    this.app.use('/api/v1/surveyscore', controllers.v1.SurveyScoreController);
   }
 
   listen() {

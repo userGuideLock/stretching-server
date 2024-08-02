@@ -12,14 +12,6 @@ const defineSurvey = (sequelize) => {
           key: 'id', // refers to column name in users table
         },
         onDelete: 'CASCADE',
-      },
-      userId: {
-        type: DataTypes.STRING,
-        references: {
-          model: 'users', // User table name
-          key: 'id', // User table primary key
-        },
-        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
       step1: {
