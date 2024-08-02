@@ -40,6 +40,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SERVER_PRIVATE_KEY }}
 
+      - name: Debug DNS
+        run: nslookup ${{ secrets.SERVER_HOST }}
+
+      - name: Set up DNS
+        run: echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
+
       - name: Deploy to server using Docker Compose
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
