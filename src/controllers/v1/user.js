@@ -46,8 +46,12 @@ router.post('/join', async (req, res) => {
       res.status(400).json({ error: 'User creation failed' });
     }
   } catch (err) {
-    console.error('Error during user creation:', err);
-    res.status(500).json({ error: err.message });
+    if (err.message === 'Device ID already in use') {
+      res.status(400).json({ error: err.message });
+    } else {
+      console.error('Error during user creation:', err);
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 
