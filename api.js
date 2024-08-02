@@ -9,7 +9,10 @@ module.exports = class API {
     this.app = express();
     this.app.use(
       cors({
-        origin: 'http://localhost:3000',
+        origin: [
+          'http://localhost:3000',
+          'https://stretching-frontend.web.app',
+        ],
       }),
     );
     this.app.use(express.json());
