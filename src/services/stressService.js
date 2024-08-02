@@ -19,12 +19,17 @@ const saveStressScore = async (req, res) => {
   }
 
   try {
-    // 이미 해당 날짜에 작성된 스트레스 점수가 있는지 확인
+    // 이미 해당 날짜에 작성된 스트레스 점수가 있는지 확인. 있다면 업데이트 함.
     const stressExist = await db.Stress.findOne({ where: { userId, date } });
     if (stressExist) {
-      return res
-        .status(400)
-        .json({ code: 4, message: 'Stress score already exists' });
+      try {
+        await db.Stress.update({ score }, { where: { userId, date } });
+        return res.status(200).json({ message: 'Stress score updated' });
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ message: 'Error updating stress score', error });
+      }
     }
 
     await db.Stress.create({
@@ -63,7 +68,7 @@ const getAllStressScores = async (req, res) => {
 
 // 해당 유저가 해당 날짜에 스트레스 점수를 기록하였는지 확인
 // 시퀄라이즈를 사용하여 데이터베이스에서 해당 날짜에 스트레스 점수가 있는지 확인
-// 있으면 true, 없으면 false 반환
+// 있으면 점수 반환, 없으면 메시지 반환
 const checkStressScoreWritten = async (req, res) => {
   const { userId } = req.params;
   const { date } = req.query;
@@ -84,9 +89,9 @@ const checkStressScoreWritten = async (req, res) => {
     });
 
     if (stressScore) {
-      res.status(200).json({ exists: true });
+      res.status(200).json({ score: +stressScore.score });
     } else {
-      res.status(200).json({ exists: false });
+      res.status(200).json({ message: 'Stress score not found' });
     }
   } catch (error) {
     res.status(500).json({ message: 'Error checking stress score', error });

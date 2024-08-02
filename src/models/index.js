@@ -4,6 +4,8 @@ const defineDiary = require('./diary');
 const defineUser = require('./user');
 const defineSurvey = require('./survey');
 const defineStreess = require('./stress');
+const defineUserFCMToken = require('./userFCMToken');
+const defineSurveyScore = require('./surveyScore');
 
 console.log(
   'host: ' + config.host,
@@ -11,7 +13,6 @@ console.log(
   'password: ' + config.password,
 );
 
-const defineUserFCMToken = require('./userFCMToken');
 const sequelize = new Sequelize(
   config.database,
   config.username,
@@ -34,6 +35,7 @@ const db = {
   Survey: defineSurvey(sequelize),
   UserFCMToken: defineUserFCMToken(sequelize),
   Stress: defineStreess(sequelize),
+  SurveyScore: defineSurveyScore(sequelize),
 };
 
 // Define associations
@@ -49,8 +51,10 @@ db.User.hasOne(db.Survey, {
 db.Survey.belongsTo(db.User, {
   foreignKey: 'userId',
 });
-
 db.User.hasMany(db.Stress, {
+  foreignKey: 'userId',
+});
+db.User.hasOne(db.SurveyScore, {
   foreignKey: 'userId',
 });
 
