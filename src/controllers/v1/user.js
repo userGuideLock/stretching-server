@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
     }
 
     if (!deviceId) {
-      return res.status(400).json({ error: 'Password is required' });
+      return res.status(400).json({ error: ' deviceId is required' });
     }
 
     const user = await UserService.Login(id, password, deviceId);
@@ -79,8 +79,14 @@ router.post('/login', async (req, res) => {
       res.status(400).json({ error: 'User login failed' });
     }
   } catch (err) {
-    console.error('Error during user login:', err);
-    res.status(500).json({ error: err.message });
+    if (
+      err.message === 'This account is already associated with another device.'
+    ) {
+      res.status(400).json({ error: err.message });
+    } else {
+      console.error('Error during login:', err);
+      res.status(500).json({ error: 'Server error' });
+    }
   }
 });
 
