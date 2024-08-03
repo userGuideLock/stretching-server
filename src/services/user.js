@@ -35,6 +35,23 @@ const Join = async (id, email, password, deviceId, gender, job, age, hobby) => {
 
 const Login = async (id, password, deviceId) => {
   try {
+    // 주어진 id로 등록된 다른 deviceId가 있는지 확인
+    const existingUser = await db.User.findOne({
+      where: {
+        id: id,
+        password: password,
+        deviceId: { [db.Sequelize.Op.ne]: deviceId }, // 다른 deviceId가 있는지 확인
+      },
+    });
+
+    // 만약 다른 deviceId가 이미 등록되어 있으면 에러 발생
+    if (existingUser) {
+      throw new Error(
+        'This account is already associated with another device.',
+      );
+    }
+
+    // 정상적인 로그인 처리
     const login = await db.User.findOne({
       where: { id: id, password: password, deviceId: deviceId },
     });
