@@ -5,7 +5,7 @@ const getTodayDiaryKeyword = async (req, res) => {
   const userId = req.params.userId;
   const lowestDate = req.query.lowestdate;
   const highestDate = req.query.highestdate;
-  const lowestSlopeDate = req.query.lowestdate;
+  const lowestSlopeDate = req.query.lowestslopedate;
 
   if (!userId || !lowestDate || !highestDate || !lowestDate) {
     return res.status(400).json({ code: 1, message: 'Invalid input' });
