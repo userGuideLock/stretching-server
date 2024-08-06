@@ -7,6 +7,8 @@ const UserFCMTokenService = require('./userFCMTokenService');
 const FcmService = require('./fcmService');
 const StressService = require('./stressService');
 const SurveyScoreService = require('./surveyScoreService');
+const TodayDiaryKeywordService = require('./todayDiaryKeyword');
+
 module.exports = {
   KeywordService,
   SpotService,
@@ -17,4 +19,5 @@ module.exports = {
   FcmService,
   StressService,
   SurveyScoreService,
+  TodayDiaryKeywordService,
 };
