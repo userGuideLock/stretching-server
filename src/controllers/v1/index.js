@@ -5,6 +5,7 @@ const SurveyController = require('./survey');
 const UserFCMTokenController = require('./userFCMTokenController');
 const StressController = require('./stress');
 const SurveyScoreController = require('./surveyScore');
+const TodayDiaryKeywordController = require('./today');
 
 module.exports = {
   SpotController,
@@ -14,4 +15,5 @@ module.exports = {
   UserFCMTokenController,
   StressController,
   SurveyScoreController,
+  TodayDiaryKeywordController,
 };

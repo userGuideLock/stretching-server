@@ -6,6 +6,7 @@ const defineSurvey = require('./survey');
 const defineStreess = require('./stress');
 const defineUserFCMToken = require('./userFCMToken');
 const defineSurveyScore = require('./surveyScore');
+const defineKeyword = require('./keyword');
 
 console.log(
   'host: ' + config.host,
@@ -36,6 +37,7 @@ const db = {
   UserFCMToken: defineUserFCMToken(sequelize),
   Stress: defineStreess(sequelize),
   SurveyScore: defineSurveyScore(sequelize),
+  Keyword: defineKeyword(sequelize),
 };
 
 // Define associations
@@ -55,6 +57,9 @@ db.User.hasMany(db.Stress, {
   foreignKey: 'userId',
 });
 db.User.hasOne(db.SurveyScore, {
+  foreignKey: 'userId',
+});
+db.User.hasMany(db.Keyword, {
   foreignKey: 'userId',
 });
 
