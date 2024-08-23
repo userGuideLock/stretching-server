@@ -22,8 +22,6 @@ async function generateRecommendations(text, categories) {
     {
       "keywords": ["키워드1", "키워드2", "키워드3"],
       "recommendedCategory": "카테고리명",
-      "recommendedWellnessProgram": "프로그램명 (한 단어)",
-      "recommendedHealingContent": "컨텐츠명 (구체적인 구문)"
     }
 
     Text: "${text}"

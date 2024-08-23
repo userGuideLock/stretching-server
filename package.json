@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/userGuideLock/stretching-spot-Backend#readme",
   "dependencies": {
+    "@tensorflow/tfjs-node": "^4.20.0",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -35,6 +36,7 @@
     "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1",
     "openai": "^4.53.0",
+    "pickleparser": "^0.2.1",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const { getRecommendationsForUser } = require('./keyword');
+const { User } = require('../models');
 
 // 카카오맵 API 키 설정
 const kakaoApiKey = process.env.KAKAO_API_KEY;
@@ -39,17 +40,15 @@ async function searchPlacesByKeyword(
 
 const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
   try {
-    const recommendations = await getRecommendationsForUser(username);
+    const user = await User.findOne({ where: { id: username } });
+
+    const recommendations = await getRecommendationsForUser(user);
 
     if (!recommendations) {
       throw new Error('No recommendations found');
     }
 
-    const {
-      recommendedCategory,
-      recommendedWellnessProgram,
-      recommendedHealingContent,
-    } = recommendations;
+    const { recommendedCategory } = recommendations;
 
     // 각 추천 항목에 대해 장소 검색 수행
     const categoryPlaces = await searchPlacesByKeyword(
@@ -59,29 +58,43 @@ const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
       page,
       size,
     );
-    const wellnessProgramPlaces = await searchPlacesByKeyword(
-      recommendedWellnessProgram,
-      x_pos,
-      y_pos,
-      page,
-      size,
-    );
 
-    // 힐링 컨텐츠는 텍스트 그대로 제공
-    const healingContentText = recommendedHealingContent;
+    // 각 클러스터별 상위 3가지 항목을 정의
+    const clusterTopCategories = {
+      0: ['스파', '종교', '가족'],
+      1: ['오락', '교육', '역사'],
+      2: ['촬영', '오락', '동물원', '테마파크'],
+      3: ['시티투어', '교육', '축제'],
+    };
+
+    const cluster_x = 36;
+    const cluster_y = 127.1;
+
+    const cluster = user.cluster;
+
+    // 클러스터에 따른 상위 3가지 항목을 bestCategories 배열에 할당
+    const bestCategories = clusterTopCategories[cluster] || [];
+
+    const results = [];
+
+    for (const category of bestCategories) {
+      const places = await searchPlacesByKeyword(
+        category,
+        cluster_x,
+        cluster_y,
+      );
+      results.push({ category, places });
+    }
 
     // 모든 검색 결과 및 힐링 컨텐츠 텍스트 반환
     return {
       categoryPlaces,
-      wellnessProgramPlaces,
-      healingContentText,
+      results,
     };
   } catch (error) {
     console.error('Error in getAllSpots:', error);
     return {
       categoryPlaces: [],
-      wellnessProgramPlaces: [],
-      healingContentText: '',
     };
   }
 };
