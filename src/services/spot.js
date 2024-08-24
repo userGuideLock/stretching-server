@@ -102,6 +102,7 @@ const getAllSpots = async (username, x_pos, y_pos, page, size) => {
     const bestCategories = clusterTopCategories[cluster] || [];
 
     const results = [];
+    const seenIds = new Set(); // Set to keep track of seen IDs
 
     for (const coordinates of userCoordinatesList) {
       const { x: cluster_x, y: cluster_y } = coordinates;
@@ -114,7 +115,18 @@ const getAllSpots = async (username, x_pos, y_pos, page, size) => {
           1,
           3,
         );
-        results.push({ category, coordinates, places });
+
+        // Filter out places with duplicate IDs
+        const uniquePlaces = places.filter((place) => {
+          if (seenIds.has(place.id)) {
+            return false;
+          } else {
+            seenIds.add(place.id);
+            return true;
+          }
+        });
+
+        results.push({ category, coordinates, places: uniquePlaces });
       }
     }
 
