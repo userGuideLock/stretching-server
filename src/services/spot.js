@@ -3,17 +3,9 @@ const axios = require('axios');
 const { getRecommendationsForUser } = require('./keyword');
 const { User } = require('../models');
 
-// 카카오맵 API 키 설정
 const kakaoApiKey = process.env.KAKAO_API_KEY;
 
-// 카카오맵 API를 사용한 키워드 검색 함수
-async function searchPlacesByKeyword(
-  keyword,
-  x_pos,
-  y_pos,
-  page = 1,
-  size = 5,
-) {
+async function searchPlacesByKeyword(keyword, x_pos, y_pos, page, size) {
   try {
     const response = await axios.get(
       'https://dapi.kakao.com/v2/local/search/keyword.json',
@@ -23,24 +15,28 @@ async function searchPlacesByKeyword(
         },
         params: {
           query: keyword,
-          size: size, // 가져올 결과의 개수
-          y: y_pos, // 중심 위치의 y좌표
-          x: x_pos, // 중심 위치의 x좌표
-          radius: 10000, // 반경 거리 단위: m, 최소:0, 최대: 20000
+          size: size,
+          y: y_pos,
+          x: x_pos,
+          radius: 10000,
           page: page,
         },
       },
     );
-    return response.data.documents; // 검색 결과에서 장소 정보만 추출
+    return response.data.documents;
   } catch (error) {
     console.error('Error fetching data from Kakao Maps API:', error);
     return [];
   }
 }
 
-const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
+const getAllSpots = async (username, x_pos, y_pos, page, size) => {
   try {
     const user = await User.findOne({ where: { id: username } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     const recommendations = await getRecommendationsForUser(user);
 
@@ -50,7 +46,6 @@ const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
 
     const { recommendedCategory } = recommendations;
 
-    // 각 추천 항목에 대해 장소 검색 수행
     const categoryPlaces = await searchPlacesByKeyword(
       recommendedCategory,
       x_pos,
@@ -59,7 +54,6 @@ const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
       size,
     );
 
-    // 각 클러스터별 상위 3가지 항목을 정의
     const clusterTopCategories = {
       0: ['스파', '종교', '가족'],
       1: ['오락', '교육', '역사'],
@@ -67,26 +61,63 @@ const getAllSpots = async (username, x_pos, y_pos, page = 1, size = 5) => {
       3: ['시티투어', '교육', '축제'],
     };
 
-    const cluster_x = 36;
-    const cluster_y = 127.1;
+    const locationCoordinates = {
+      '20대_남': [
+        { x: 37.4489926, y: 126.9538519 },
+        { x: 37.4832519, y: 126.9287583 },
+        { x: 37.550912, y: 126.921127 },
+        { x: 35.8708214, y: 128.5955436 },
+        { x: 35.1554021, y: 129.0638741 },
+      ],
+      '20대_여': [
+        { x: 37.4585522, y: 126.9472851 },
+        { x: 37.4832519, y: 126.9287583 },
+        { x: 37.5466701, y: 126.9244874 },
+        { x: 35.8616593, y: 128.6069999 },
+        { x: 35.1554021, y: 129.0638741 },
+      ],
+      '30대_남': [
+        { x: 37.5318046, y: 126.9141547 },
+        { x: 37.528786, y: 126.968395 },
+        { x: 37.5067853, y: 127.0603993 },
+        { x: 37.5664235, y: 126.9678039 },
+        { x: 37.0891196, y: 126.9112393 },
+      ],
+      '30대_여': [
+        { x: 37.5170751, y: 126.9033411 },
+        { x: 37.5390298, y: 127.0020559 },
+        { x: 37.5226393, y: 127.0362922 },
+        { x: 37.5620577, y: 126.9805633 },
+        { x: 37.1599476, y: 127.1109475 },
+      ],
+      // Other age-gender groups go here...
+    };
+
+    const userAgeGroup = user.age;
+    const userGender = user.gender;
+    const userLocationKey = `${userAgeGroup}_${userGender}`;
+    const userCoordinatesList = locationCoordinates[userLocationKey];
 
     const cluster = user.cluster;
-
-    // 클러스터에 따른 상위 3가지 항목을 bestCategories 배열에 할당
     const bestCategories = clusterTopCategories[cluster] || [];
 
     const results = [];
 
-    for (const category of bestCategories) {
-      const places = await searchPlacesByKeyword(
-        category,
-        cluster_x,
-        cluster_y,
-      );
-      results.push({ category, places });
+    for (const coordinates of userCoordinatesList) {
+      const { x: cluster_x, y: cluster_y } = coordinates;
+
+      for (const category of bestCategories) {
+        const places = await searchPlacesByKeyword(
+          category,
+          cluster_x,
+          cluster_y,
+          1,
+          3,
+        );
+        results.push({ category, coordinates, places });
+      }
     }
 
-    // 모든 검색 결과 및 힐링 컨텐츠 텍스트 반환
     return {
       categoryPlaces,
       results,

@@ -4,22 +4,25 @@ const { UserService } = require('../../services');
 
 router.post('/join', async (req, res) => {
   try {
-    const { id, email, password, deviceId, gender, job, age, hobby } = req.body;
+    const {
+      id,
+      email,
+      password,
+      deviceId,
+      gender,
+      job,
+      age,
+      hobby,
+      hasCar = false, // 기본값: false (자동차가 없는 경우)
+      eduLevel = 3, // 기본값: 1 (최저 교육 수준)
+      monAveInc = 2, // 기본값: 1 (최저 소득 수준)
+      famNum = 2, // 기본값: 1 (1인 가족)
+      marryStatus = 1, // 기본값: 1 (미혼)
+    } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ error: 'Id is required' });
-    }
-
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
-
-    if (!password) {
-      return res.status(400).json({ error: 'Password is required' });
-    }
-
-    if (!deviceId) {
-      return res.status(400).json({ error: 'deviceId is required' });
+    // 필수 입력값 체크
+    if (!id || !email || !password || !deviceId) {
+      return res.status(400).json({ error: 'Required fields are missing' });
     }
 
     // hobby가 배열인지 확인
@@ -29,7 +32,8 @@ router.post('/join', async (req, res) => {
         .json({ error: 'Hobby must be an array of strings' });
     }
 
-    const user = await UserService.Join(
+    // UserService.Join 호출
+    const user = await UserService.Join({
       id,
       email,
       password,
@@ -38,19 +42,24 @@ router.post('/join', async (req, res) => {
       job,
       age,
       hobby,
-    );
+      hasCar,
+      eduLevel,
+      monAveInc,
+      famNum,
+      marryStatus,
+    });
 
     if (user) {
-      res.status(201).json({ message: 'User successfully created' });
+      return res.status(201).json({ message: 'User successfully created' });
     } else {
-      res.status(400).json({ error: 'User creation failed' });
+      return res.status(400).json({ error: 'User creation failed' });
     }
   } catch (err) {
     if (err.message === 'Device ID already in use') {
-      res.status(400).json({ error: err.message });
+      return res.status(400).json({ error: err.message });
     } else {
       console.error('Error during user creation:', err);
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 });
@@ -59,33 +68,26 @@ router.post('/login', async (req, res) => {
   try {
     const { id, password, deviceId } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ error: 'Id is required' });
-    }
-
-    if (!password) {
-      return res.status(400).json({ error: 'Password is required' });
-    }
-
-    if (!deviceId) {
-      return res.status(400).json({ error: ' deviceId is required' });
+    // 필수 입력값 체크
+    if (!id || !password || !deviceId) {
+      return res.status(400).json({ error: 'Required fields are missing' });
     }
 
     const user = await UserService.Login(id, password, deviceId);
 
     if (user) {
-      res.status(201).json({ message: 'User successfully login' });
+      return res.status(200).json({ message: 'User successfully logged in' });
     } else {
-      res.status(400).json({ error: 'User login failed' });
+      return res.status(400).json({ error: 'User login failed' });
     }
   } catch (err) {
     if (
       err.message === 'This account is already associated with another device.'
     ) {
-      res.status(400).json({ error: err.message });
+      return res.status(400).json({ error: err.message });
     } else {
       console.error('Error during login:', err);
-      res.status(500).json({ error: 'Server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 });
