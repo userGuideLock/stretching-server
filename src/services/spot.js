@@ -18,7 +18,7 @@ async function searchPlacesByKeyword(keyword, x_pos, y_pos, page, size) {
           size: size,
           y: y_pos,
           x: x_pos,
-          radius: 10000,
+          radius: 1000,
           page: page,
         },
       },
