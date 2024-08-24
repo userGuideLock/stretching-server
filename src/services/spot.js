@@ -126,7 +126,9 @@ const getAllSpots = async (username, x_pos, y_pos, page, size) => {
           }
         });
 
-        results.push({ category, coordinates, places: uniquePlaces });
+        if (uniquePlaces.length > 0) {
+          results.push({ category, coordinates, places: uniquePlaces });
+        }
       }
     }
 
