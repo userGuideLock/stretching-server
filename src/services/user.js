@@ -1,63 +1,91 @@
 const db = require('../models');
+const { oneHotEncode } = require('../ml/encoder');
+const { predictCluster } = require('../ml/kmeans');
 
-const Join = async (id, email, password, deviceId, gender, job, age, hobby) => {
+const Join = async (userData) => {
+  const {
+    id,
+    email,
+    password,
+    deviceId,
+    gender,
+    job,
+    age,
+    hobby,
+    hasCar,
+    eduLevel,
+    monAveInc,
+    famNum,
+    marryStatus,
+  } = userData;
+
   try {
-    // 먼저 해당 deviceId가 이미 존재하는지 확인
-    const existingUser = await db.User.findOne({
-      where: { deviceId: deviceId },
-    });
+    const existingUser = await db.User.findOne({ where: { deviceId } });
 
-    // deviceId가 이미 존재하면 저장하지 않고 null 반환
     if (existingUser) {
       throw new Error('Device ID already in use');
     }
 
-    // 취미를 콤마로 구분된 문자열로 저장
     const hobbies = hobby ? hobby.join(',') : null;
 
-    const join = await db.User.create({
-      id: id,
-      email: email,
-      password: password,
-      deviceId: deviceId,
-      gender: gender,
-      job: job,
-      age: age,
-      hobby: hobbies,
-    });
+    const intAge = parseInt(age.substring(0, 2), 10) + 5 || 0;
 
-    return join;
+    const dataPoint = [
+      intAge,
+      1,
+      parseInt(hasCar),
+      eduLevel,
+      monAveInc,
+      famNum,
+      marryStatus,
+    ];
+
+    const encodedDataPoint = oneHotEncode(dataPoint);
+    const predictedCluster = predictCluster(encodedDataPoint);
+
+    return await db.User.create({
+      id,
+      email,
+      password,
+      deviceId,
+      gender,
+      job,
+      age,
+      hobby: hobbies,
+      hasCar,
+      eduLevel,
+      monAveInc,
+      famNum,
+      marryStatus,
+      cluster: predictedCluster,
+    });
   } catch (err) {
-    console.log(err);
+    console.error('Error in Join function:', err);
     throw err;
   }
 };
 
 const Login = async (id, password, deviceId) => {
   try {
-    // 주어진 id로 등록된 다른 deviceId가 있는지 확인
     const existingUser = await db.User.findOne({
       where: {
-        id: id,
-        password: password,
-        deviceId: { [db.Sequelize.Op.ne]: deviceId }, // 다른 deviceId가 있는지 확인
+        id,
+        password,
+        deviceId: { [db.Sequelize.Op.ne]: deviceId },
       },
     });
 
-    // 만약 다른 deviceId가 이미 등록되어 있으면 에러 발생
     if (existingUser) {
       throw new Error(
         'This account is already associated with another device.',
       );
     }
 
-    // 정상적인 로그인 처리
-    const login = await db.User.findOne({
-      where: { id: id, password: password, deviceId: deviceId },
+    return await db.User.findOne({
+      where: { id, password, deviceId },
     });
-    return login;
   } catch (err) {
-    console.log(err);
+    console.error('Error in Login function:', err);
     throw err;
   }
 };

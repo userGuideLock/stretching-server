@@ -1,12 +1,9 @@
-const { User, Diary, Keyword } = require('../models');
+const { Diary } = require('../models');
 const { generateRecommendations } = require('./openaiService');
 const categories = require('../constant/categories');
 
-const getRecommendationsForUser = async (username) => {
+const getRecommendationsForUser = async (user) => {
   try {
-    // 유저 정보를 ID로 가져오기
-    const user = await User.findOne({ where: { id: username } });
-
     if (!user) {
       throw new Error('User not found');
     }
@@ -18,7 +15,7 @@ const getRecommendationsForUser = async (username) => {
 
     // 다이어리 로그 가져오기: 다이어리 로그가 5개 이상이면 5개만 가져옴
     const diaryLogs = await Diary.findAll({
-      where: { userId: username },
+      where: { userId: user.id },
       order: [['date', 'DESC']],
       limit: 5,
     });

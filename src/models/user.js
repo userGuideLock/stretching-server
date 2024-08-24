@@ -38,6 +38,37 @@ const defineUser = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      hasCar: {
+        // DQ7: True or False
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+      eduLevel: {
+        // DQ1: 1 ~ 8
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      monAveInc: {
+        // DQ6A: 1 ~ 6
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      famNum: {
+        // DQ2
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      marryStatus: {
+        // DQ3: 1 ~ 5
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      cluster: {
+        // 0 ~ 3
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+      },
       createdTime: {
         type: DataTypes.DATE,
         allowNull: false,
