@@ -1,4 +1,4 @@
-const { Diary } = require('../models');
+const { Diary, Keyword } = require('../models');
 const { generateRecommendations } = require('./openaiService');
 const categories = require('../constant/categories');
 
@@ -51,7 +51,7 @@ const getRecommendationsForUser = async (user) => {
     //이미 해당 유저의 키워드가 같은 날짜에 존재하는지 확인
     const existingKeyword = await Keyword.findOne({
       where: {
-        userId: username,
+        userId: user.id,
         date: new Date(),
       },
     });
@@ -65,7 +65,7 @@ const getRecommendationsForUser = async (user) => {
     } else {
       //해당 keywords를 한꺼번에 저장
       await Keyword.create({
-        userId: username,
+        userId: user.id,
         keyword: keywords.join(','),
       });
     }
