@@ -9,7 +9,10 @@ module.exports = class API {
     this.app = express();
     this.app.use(
       cors({
-        origin: 'http://localhost:3000',
+        origin: [
+          'http://localhost:3000',
+          'https://stretching-frontend.web.app',
+        ],
       }),
     );
     this.app.use(express.json());
@@ -23,6 +26,7 @@ module.exports = class API {
     this.app.use('/api/v1/userfcmtoken', controllers.v1.UserFCMTokenController);
     this.app.use('/api/v1/stress', controllers.v1.StressController);
     this.app.use('/api/v1/surveyscore', controllers.v1.SurveyScoreController);
+    this.app.use('/api/v1/today', controllers.v1.TodayDiaryKeywordController);
   }
 
   listen() {

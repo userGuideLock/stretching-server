@@ -32,7 +32,44 @@ const getRecommendationsForUser = async (user) => {
     }
 
     // 키워드 추출 및 추천 카테고리, 웰니스 프로그램, 힐링 컨텐츠 추천
-    return await generateRecommendations(keywordsText, categories);
+    const jsonText = await generateRecommendations(keywordsText, categories);
+
+    // json에서 키워드만 추출
+    /**
+     * 
+    {
+      "keywords": ["키워드1", "키워드2", "키워드3"],
+      "recommendedCategory": "카테고리명",
+      "recommendedWellnessProgram": "프로그램명 (한 단어)",
+      "recommendedHealingContent": "컨텐츠명 (구체적인 구문)"
+    }
+    */
+    //jsonText의 키워드만 추출
+    const keywords = jsonText.keywords;
+    console.log(keywords);
+
+    //이미 해당 유저의 키워드가 같은 날짜에 존재하는지 확인
+    const existingKeyword = await Keyword.findOne({
+      where: {
+        userId: username,
+        date: new Date(),
+      },
+    });
+
+    //이미 해당 유저의 키워드가 같은 날짜에 존재하면 업데이트
+    if (existingKeyword) {
+      await existingKeyword.update({
+        keyword: keywords.join(','),
+      });
+      return jsonText;
+    } else {
+      //해당 keywords를 한꺼번에 저장
+      await Keyword.create({
+        userId: username,
+        keyword: keywords.join(','),
+      });
+    }
+    return jsonText;
   } catch (error) {
     console.error('Error in getRecommendationsForUser:', error);
     return null;
